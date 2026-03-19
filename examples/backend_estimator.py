@@ -8,22 +8,26 @@ from qiskit.primitives import BackendEstimatorV2
 adapter = MQSSQiskitAdapter(token="<api-token>")
 [backend] = adapter.backends(name="<resource-name>")
 
+
 def estimate_required_shots(precision, variance=1.0):
     if precision <= 0:
         raise ValueError("precision must be > 0")
-    return math.ceil(variance / (precision ** 2))
+    return math.ceil(variance / (precision**2))
 
-# 1) State-preparation circuit 
+
+# 1) State-preparation circuit
 qc = QuantumCircuit(2)
 qc.h(0)
 qc.cx(0, 1)
 
-# 2) Define a simple Hamiltonian 
-H = SparsePauliOp.from_list([
-    ("ZI", 1.0),
-    ("IZ", 1.0),
-    ("ZZ", 1.0),
-])
+# 2) Define a simple Hamiltonian
+H = SparsePauliOp.from_list(
+    [
+        ("ZI", 1.0),
+        ("IZ", 1.0),
+        ("ZZ", 1.0),
+    ]
+)
 
 # 3) Compute the ideal expectation for comparisons
 sv_logical = Statevector.from_instruction(qc)
@@ -38,7 +42,7 @@ H_isa = H.apply_layout(tqc.layout)
 
 # 6) Run the Estimator grouping commuting observables
 estimator = BackendEstimatorV2(backend=backend)
-estimator.options.abelian_grouping = True 
+estimator.options.abelian_grouping = True
 precision = 0.01
 
 estimated_num_shots = estimate_required_shots(precision=precision, variance=1.0)
