@@ -15,12 +15,12 @@ def estimate_required_shots(precision, variance=1.0):
     return math.ceil(variance / (precision**2))
 
 
-# 1) State-preparation circuit
+# State-preparation circuit
 qc = QuantumCircuit(2)
 qc.h(0)
 qc.cx(0, 1)
 
-# 2) Define a simple Hamiltonian
+# Define a simple Hamiltonian
 H = SparsePauliOp.from_list(
     [
         ("ZI", 1.0),
@@ -29,7 +29,7 @@ H = SparsePauliOp.from_list(
     ]
 )
 
-# 3) Compute the ideal expectation for comparisons
+# Compute the ideal expectation for comparisons
 sv_logical = Statevector.from_instruction(qc)
 ev_ideal = sv_logical.expectation_value(H)
 ev_ideal_val = float(ev_ideal.real)
