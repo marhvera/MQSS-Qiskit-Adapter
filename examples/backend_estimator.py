@@ -1,6 +1,6 @@
 import math
 import sys
-from qiskit import QuantumCircuit, transpile
+from qiskit import QuantumCircuit
 from mqss.qiskit_adapter import MQSSQiskitAdapter
 from qiskit.quantum_info import SparsePauliOp, Statevector
 from qiskit.primitives import BackendEstimatorV2
@@ -34,13 +34,7 @@ sv_logical = Statevector.from_instruction(qc)
 ev_ideal = sv_logical.expectation_value(H)
 ev_ideal_val = float(ev_ideal.real)
 
-# 4) Transpile for the backend
-tqc = transpile(qc, backend=backend, optimization_level=3)
-
-# 5) Map Hamiltonian to the transpiled circuit layout for the backend run
-H_isa = H.apply_layout(tqc.layout)
-
-# 6) Run the Estimator grouping commuting observables
+# Run the Estimator grouping commuting observables
 estimator = BackendEstimatorV2(backend=backend)
 estimator.options.abelian_grouping = True
 precision = 0.01
@@ -54,7 +48,7 @@ if estimated_num_shots > 20000:
     print("Consider using a looser precision (e.g. precision=0.05).")
     sys.exit(1)
 
-job = estimator.run([(tqc, H_isa)], precision=precision)
+job = estimator.run([(qc, H)], precision=precision)
 result = job.result()
 pub_result = result[0]
 
